@@ -1,6 +1,6 @@
 const jobs = require('../../data/jobs');
 
-// Delete ke baad bhi counter aage barhega, IDs repeat nahi hongi.
+// Keep increasing the counter so deleted IDs are not reused during this run.
 let nextId = Math.max(0, ...jobs.map((job) => job.id)) + 1;
 
 function findAll() {
@@ -20,14 +20,14 @@ function create(data) {
 
 function update(id, data) {
   const job = findById(id);
-  Object.assign(job, data); // Existing object ki fields badlo.
+  Object.assign(job, data); // Update the fields of the existing object.
   return job;
 }
 
 function remove(id) {
   const index = jobs.findIndex((job) => job.id === id);
   if (index !== -1) {
-    jobs.splice(index, 1); // Is position se ek item hatao.
+    jobs.splice(index, 1); // Remove one item at this position.
   }
 }
 

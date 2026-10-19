@@ -2,10 +2,10 @@ const express = require('express');
 const { getJobs, getJob, createJob, updateJob, deleteJob } = require('./job.controller');
 const router = express.Router();
 
-// app.js ne /jobs prefix lagaya hai, is liye yahan sirf / hai.
+// app.js adds the /jobs prefix, so this route only needs /.
 router.get('/', getJobs);
 router.post('/', createJob);
-// :id variable hissa hai: /jobs/1 mein id '1' hogi.
+// :id is a route parameter: /jobs/1 gives an id of '1'.
 router.get('/:id', getJob);
 router.put('/:id', updateJob);
 router.delete('/:id', deleteJob);

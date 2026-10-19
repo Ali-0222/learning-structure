@@ -1,4 +1,4 @@
-// throw current function rokta hai; Express error middleware ko bhejta hai.
+// Throwing stops the current function; Express forwards the error to error middleware.
 function fail(status, message) {
   const error = new Error(message);
   error.status = status;
@@ -22,7 +22,7 @@ function validateJob(body) {
   ) {
     fail(400, 'Title, company, and location must be non-empty strings.');
   }
-  // Sirf allowed fields lo; client apni ID set nahi kar sakta.
+  // Return only allowed fields; the client cannot set the ID.
   return { title: title.trim(), company: company.trim(), location: location.trim() };
 }
 

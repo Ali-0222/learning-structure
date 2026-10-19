@@ -1,7 +1,7 @@
 const repository = require('./job.repository');
 const { fail, validateId, validateJob } = require('./job.validation');
 
-// Service kaam ke rules sambhalti hai; yahan req/res nahi hain.
+// The service handles application rules without using req or res.
 function listJobs(search = '') {
   if (typeof search !== 'string') {
     fail(400, 'Search must be a single text value.');
@@ -27,8 +27,8 @@ function createJob(body) {
 }
 
 function updateJob(rawId, body) {
-  const job = getJob(rawId); // Update se pehle record hona zaroori hai.
-  const data = validateJob(body); // PUT mein teenon fields chahiye.
+  const job = getJob(rawId); // The record must exist before it can be updated.
+  const data = validateJob(body); // PUT requires all three editable fields.
   return repository.update(job.id, data);
 }
 

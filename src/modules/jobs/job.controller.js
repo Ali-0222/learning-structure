@@ -1,6 +1,6 @@
 const service = require('./job.service');
 
-// Controller request se data leta hai aur HTTP response bhejta hai.
+// The controller reads request data and sends HTTP responses.
 function getJobs(req, res) {
   res.json(service.listJobs(req.query.search));
 }
