@@ -70,8 +70,8 @@ Reading a file takes time. An asynchronous operation returns a Promise: a value 
 
 ```js
 async function getJobs(req, res) {
-  const jobs = await service.listJobs(req.query.search);
-  res.json(jobs);
+  const result = await service.listJobs(req.query);
+  res.json(result);
 }
 ```
 
@@ -80,7 +80,7 @@ async function getJobs(req, res) {
 - Node can handle other work while file I/O is pending.
 - A rejected Promise throws at the await expression and reaches the error handler.
 
-Without await, `jobs` would be a Promise rather than the list you want to send. The service also awaits the repository before calling array methods such as `filter`.
+Without await, `result` would be a Promise rather than the response data you want to send. The service also awaits the repository before calling array methods such as `filter`. Day 3 passes the full query object and returns `{ data, pagination }`; see [DAY-3.md](DAY-3.md).
 
 ## 3. Reading and writing JSON
 

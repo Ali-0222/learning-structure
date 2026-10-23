@@ -28,7 +28,7 @@ The service also calls validation functions. Results return from the repository 
 
 | Method | URL | Action |
 | --- | --- | --- |
-| GET | /jobs | List all jobs |
+| GET | /jobs | List a page of jobs (default: page 1, limit 5) |
 | GET | /jobs?search=node | Search titles, companies, and locations |
 | GET | /jobs/1 | Retrieve job 1 |
 | POST | /jobs | Create a job |
@@ -36,7 +36,7 @@ The service also calls validation functions. Results return from the repository 
 | DELETE | /jobs/1 | Remove a job |
 
 POST and PUT require title, company, and location as non-empty strings. Send all three fields with PUT. The server assigns the ID.
-200 means success, 201 created, 400 invalid input, and 404 job or route not found. A search with no matches returns an empty array.
+200 means success, 201 created, 400 invalid input, and 404 job or route not found. List responses now use `{ data, pagination }`. A search with no matches returns an empty `data` array and zero total/totalPages. See [DAY-3.md](DAY-3.md) for filtering, sorting, and query examples.
 
 ## Parameters, query, and body
 

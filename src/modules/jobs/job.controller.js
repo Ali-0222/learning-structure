@@ -2,8 +2,8 @@ const service = require('./job.service');
 
 // The controller reads request data and sends HTTP responses.
 async function getJobs(req, res) {
-  const jobs = await service.listJobs(req.query.search);
-  res.json(jobs);
+  const result = await service.listJobs(req.query);
+  res.json(result);
 }
 
 async function getJob(req, res) {

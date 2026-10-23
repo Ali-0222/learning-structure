@@ -4,6 +4,8 @@ A beginner-friendly project for learning Node.js backend structure through a wor
 
 **Day 2:** Start with [DAY-2.md](DAY-2.md) for JSON file persistence, async/await, middleware, and restart tests. Jobs now survive server restarts.
 
+**Day 3:** Read [DAY-3.md](DAY-3.md) for query validation, filtering, sorting, and pagination. `GET /jobs` now returns `{ data, pagination }`, with five jobs per page by default. Other endpoint response shapes are unchanged.
+
 A backend receives requests, works with data, and sends responses. Node.js runs JavaScript outside the browser. Express helps define URLs and the functions that handle them. An API lets a browser or another program request data or perform actions.
 
 ## Understanding the full structure
@@ -113,7 +115,7 @@ Example POST response when creating the first new job with no previous saved dat
 { "id": 2, "title": "Backend Intern", "company": "ABC Software", "location": "Karachi" }
 ```
 
-GET now returns both jobs. Remove `company` from the POST body to receive a 400 response; PowerShell displays it as an error.
+With just these two records, GET returns both jobs inside `data`, alongside pagination information. Remove `company` from the POST body to receive a 400 response; PowerShell displays it as an error.
 Jobs are saved in `data/jobs.json` and survive a restart. `src/data/jobs.js` supplies starter data only when the saved file is missing. The saved file is excluded from Git. This is local file storage, not a database.
 
 ## How a request moves through the code
@@ -125,7 +127,7 @@ GET /jobs:
 1. The request passes through the middleware in app.js.
 2. `app.use('/jobs', jobRoutes)` forwards it to the jobs router.
 3. `router.get('/', getJobs)` calls the controller's getJobs function.
-4. The controller calls the service. The service gets the list from the repository and applies the search filter. The controller sends JSON.
+4. The controller passes the full query object to the service. The service validates it, loads the records, filters and sorts them, then selects the requested page. The controller sends `{ data, pagination }` as JSON.
 
 POST /jobs:
 
