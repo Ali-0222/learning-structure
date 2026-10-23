@@ -1,7 +1,11 @@
 const express = require('express');
 const jobRoutes = require('./modules/jobs/job.routes');
+const requestLogger = require('./middleware/request-logger.middleware');
+const notFound = require('./middleware/not-found.middleware');
+const errorHandler = require('./middleware/error.middleware');
 
 const app = express();
+app.use(requestLogger);
 
 // Parse a JSON request body into JavaScript data available in req.body.
 app.use(express.json());
@@ -14,18 +18,8 @@ app.get('/', (req, res) => {
 // Forward requests starting with /jobs to the jobs router.
 app.use('/jobs', jobRoutes);
 
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found.' });
-});
-
-// Express identifies error middleware by its four parameters.
-app.use((err, req, res, next) => {
-  if (err.type === 'entity.parse.failed') {
-    return res.status(400).json({ message: 'Request body must contain valid JSON.' });
-  }
-  res.status(err.status || 500).json({
-    message: err.status ? err.message : 'Unable to process the request.',
-  });
-});
+// Order matters: routes first, unknown-route handling next, errors last.
+app.use(notFound);
+app.use(errorHandler);
 
 module.exports = app;

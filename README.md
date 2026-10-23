@@ -2,6 +2,8 @@
 
 A beginner-friendly project for learning Node.js backend structure through a working HireHub Jobs API.
 
+**Day 2:** Start with [DAY-2.md](DAY-2.md) for JSON file persistence, async/await, middleware, and restart tests. Jobs now survive server restarts.
+
 A backend receives requests, works with data, and sends responses. Node.js runs JavaScript outside the browser. Express helps define URLs and the functions that handle them. An API lets a browser or another program request data or perform actions.
 
 ## Understanding the full structure
@@ -38,7 +40,7 @@ Files inside a feature module have these roles:
 - **Routes:** choose a function based on the URL and HTTP method.
 - **Controller:** read request data and send HTTP responses.
 - **Service:** apply application rules, such as checking whether a job exists.
-- **Repository:** read and write data; this project currently uses an array.
+- **Repository:** read and write records through the JSON file storage helper.
 - **Validation:** check input values.
 - **Types:** describe data shapes in TypeScript.
 - **Constants:** store fixed values such as job statuses.
@@ -57,12 +59,19 @@ structure-understanding/
     server.js                 starts the server
     app.js                    sets up Express and connects routes
     data/
-      jobs.js                 stores the temporary jobs array
+      jobs.js                 provides starter records when no saved file exists
+      job-store.js            reads and saves JSON data
+    config/
+      storage.js              selects the storage file path
+    middleware/
+      request-logger.middleware.js  logs requests and calls next()
+      not-found.middleware.js       handles unknown routes
+      error.middleware.js           sends error responses
     modules/jobs/
       job.routes.js           maps methods and URLs to controllers
       job.controller.js       reads requests and sends responses
       job.service.js          handles rules and application flow
-      job.repository.js       reads and modifies the jobs array
+      job.repository.js       reads and modifies saved jobs
       job.validation.js       checks fields and IDs
 ```
 
@@ -98,14 +107,14 @@ Invoke-RestMethod -Uri 'http://localhost:3000/jobs' -Method Post -ContentType 'a
 Invoke-RestMethod -Uri 'http://localhost:3000/jobs' -Method Get
 ```
 
-Example POST response after a fresh server start:
+Example POST response when creating the first new job with no previous saved data:
 
 ```json
 { "id": 2, "title": "Backend Intern", "company": "ABC Software", "location": "Karachi" }
 ```
 
 GET now returns both jobs. Remove `company` from the POST body to receive a 400 response; PowerShell displays it as an error.
-Restarting the server restores only the original sample job. The array is stored in memory, not in a database.
+Jobs are saved in `data/jobs.json` and survive a restart. `src/data/jobs.js` supplies starter data only when the saved file is missing. The saved file is excluded from Git. This is local file storage, not a database.
 
 ## How a request moves through the code
 
@@ -123,9 +132,9 @@ POST /jobs:
 1. `express.json()` parses the JSON request body into `req.body`.
 2. The router calls createJob.
 3. The controller passes the body to the service, which validates it.
-4. Invalid input throws an error; the error middleware in app.js sends a 400 response.
-5. For valid input, the repository calls `jobs.push(job)` to add a record.
-6. The controller sends the new job with status 201.
+4. Invalid input throws an error; the error middleware registered in app.js sends a 400 response.
+5. For valid input, the repository adds a record through the storage helper and waits for the JSON file to be saved.
+6. The async controller sends the new job with status 201 after saving succeeds.
 
 ## Basic code vocabulary
 
@@ -157,7 +166,7 @@ The complete CRUD schedule is in [CRUD-GUIDE.md](CRUD-GUIDE.md).
 
 1. Spend an hour on variables, objects, arrays, functions, and require. Write a sample job yourself.
 2. Read server.js and app.js, run the server, and change the welcome message.
-3. Trace GET /jobs through each file and add a second sample job to the array.
+3. Trace GET /jobs through each file. Add another job using POST and inspect the saved JSON file.
 4. Read the POST flow and send a job from PowerShell.
 5. Try missing fields, a whitespace-only title, and an unknown URL. Observe the status codes.
 6. Explain the GET flow without notes and practice adding a salary field.

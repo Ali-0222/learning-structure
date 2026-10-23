@@ -4,11 +4,11 @@ The complete original HireHub structure is present in this workspace. The worksp
 
 ## Running code
 
-npm start runs src/server.js, which loads src/app.js and the JavaScript Jobs module. Jobs are stored in src/data/jobs.js.
+npm start runs src/server.js, which loads src/app.js and the JavaScript Jobs module. Jobs are persisted in data/jobs.json using src/data/job-store.js. src/data/jobs.js contains starter records for when the saved file is missing. src/config/storage.js selects the file path. JavaScript middleware files handle request logging, unknown routes, and errors. See [DAY-2.md](../DAY-2.md) for the current learning lesson.
 
 ## Learning placeholders
 
-The original .ts files are empty TypeScript placeholders, including app.ts and server.ts. They are not imported or executed. Existing .js files contain the working implementation. TypeScript, Prisma, authentication, integrations, background workers, Docker, linting and test tooling are not configured. Their empty files show where future implementation belongs. Empty configuration files are placeholders, not usable configurations.
+The original .ts files are empty TypeScript placeholders, including app.ts and server.ts. They are not imported or executed. Existing .js files contain the working implementation. TypeScript, Prisma, authentication, integrations, background workers, Docker, linting, and Vitest are not configured. Their empty files show where future implementation belongs. Empty configuration files are placeholders, not usable configurations. npm test runs tests/integration/jobs.test.js using Node's built-in test runner with isolated temporary storage.
 
 ## Original structure
 

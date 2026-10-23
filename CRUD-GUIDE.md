@@ -1,12 +1,12 @@
 # Understanding the complete Jobs CRUD flow
 
-CRUD means Create, Read, Update, Delete. This exercise covers JavaScript, Express, routing, application layers, validation, search, and errors. Data is stored in an in-memory array and resets when the server restarts.
+CRUD means Create, Read, Update, Delete. This exercise covers JavaScript, Express, routing, application layers, validation, search, and errors. Day 2 adds JSON file storage so jobs survive server restarts. See [DAY-2.md](DAY-2.md) for async/await and storage details.
 
 ## File flow
 
 ```text
-Request -> app.js -> routes -> controller -> service -> repository -> jobs array
-Response <- controller <- service <- repository <- jobs array
+Request -> app.js -> routes -> controller -> service -> repository -> JSON storage
+Response <- controller <- service <- repository <- JSON storage
 ```
 
 The service also calls validation functions. Results return from the repository through the service to the controller, which sends the JSON response.
@@ -21,6 +21,8 @@ The service also calls validation functions. Results return from the repository 
 | job.repository.js | Find, create, update, and remove data |
 | job.validation.js | Check IDs and required fields |
 | data/jobs.js | Store sample records |
+| data/job-store.js | Load and save JSON records |
+| config/storage.js | Choose the local data file path |
 
 ## Endpoints
 
@@ -54,7 +56,7 @@ POST and PUT require title, company, and location as non-empty strings. Send all
 
 PUT first finds the job, validates the body, and then updates its fields with `Object.assign` in the repository.
 DELETE first finds the job, then uses `findIndex` to locate its position and `splice` to remove it.
-The ID counter is separate from the array length. Deleting a job does not cause its ID to be reused during the same server run.
+The ID counter is saved separately from the array length. Deleting a job does not cause its ID to be reused, even after restarting with the same saved file.
 
 ## Run and practice
 

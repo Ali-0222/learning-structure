@@ -1,34 +1,41 @@
-const jobs = require('../../data/jobs');
+const { readStore, updateStore } = require('../../data/job-store');
+const { fail } = require('./job.validation');
 
-// Keep increasing the counter so deleted IDs are not reused during this run.
-let nextId = Math.max(0, ...jobs.map((job) => job.id)) + 1;
-
-function findAll() {
-  return jobs;
+async function findAll() {
+  const store = await readStore();
+  return store.jobs;
 }
 
-function findById(id) {
+async function findById(id) {
+  const jobs = await findAll();
   return jobs.find((job) => job.id === id);
 }
 
-function create(data) {
-  const job = { id: nextId, ...data };
-  nextId = nextId + 1;
-  jobs.push(job);
-  return job;
+async function create(data) {
+  return updateStore((store) => {
+    const job = { id: store.nextId, ...data };
+    store.nextId = store.nextId + 1;
+    store.jobs.push(job);
+    return job;
+  });
 }
 
-function update(id, data) {
-  const job = findById(id);
-  Object.assign(job, data); // Update the fields of the existing object.
-  return job;
+async function update(id, data) {
+  return updateStore((store) => {
+    const job = store.jobs.find((job) => job.id === id);
+    // Another request may have deleted it after the service checked it.
+    if (!job) fail(404, 'Job not found.');
+    Object.assign(job, data);
+    return job;
+  });
 }
 
-function remove(id) {
-  const index = jobs.findIndex((job) => job.id === id);
-  if (index !== -1) {
-    jobs.splice(index, 1); // Remove one item at this position.
-  }
+async function remove(id) {
+  return updateStore((store) => {
+    const index = store.jobs.findIndex((job) => job.id === id);
+    if (index === -1) fail(404, 'Job not found.');
+    store.jobs.splice(index, 1);
+  });
 }
 
 module.exports = { findAll, findById, create, update, remove };
