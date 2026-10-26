@@ -137,9 +137,9 @@ $result.pagination
 npm.cmd test
 ```
 
-There are now two integration tests. The Day 2 test covers persistence and CRUD. The Day 3 test checks page boundaries, combined filters, ascending/descending sorting, equal-title ordering, invalid queries, empty results, and unchanged saved data after reads. Both use temporary storage rather than your practice records.
+The Day 2 test covers persistence and CRUD. The Day 3 test checks page boundaries, combined filters, ascending/descending sorting, equal-title ordering, invalid queries, empty results, and unchanged saved data after reads. Day 4 adds a partial-update test. All use temporary storage rather than your practice records.
 
-The Day 2 failure-recovery checks intentionally print storage errors. The final test summary should show two passed and zero failed tests.
+The Day 2 failure-recovery checks intentionally print storage errors. With Day 4 included, the final test summary should show three passed and zero failed tests.
 
 ## Five-to-six-hour learning plan
 

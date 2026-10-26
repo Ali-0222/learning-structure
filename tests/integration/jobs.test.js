@@ -6,6 +6,59 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 
+test('PATCH updates only supplied fields and preserves valid saved data', async (t) => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'hirehub-day-four-'));
+  const file = path.join(directory, 'jobs.json');
+  let server;
+  t.after(async () => {
+    if (server) await server.stop();
+    await fs.rm(directory, { recursive: true, force: true });
+  });
+  server = await startServer(file);
+  const data = { title: 'Backend Intern', company: 'ABC', location: 'Lahore' };
+  const created = await server.request('/jobs', 'POST', data);
+  assert.equal(created.status, 201);
+  const route = `/jobs/${created.body.id}`;
+  const patched = await server.request(route, 'PATCH', { location: ' Karachi ' });
+  assert.equal(patched.status, 200);
+  assert.deepEqual(patched.body, { id: created.body.id, ...data, location: 'Karachi' });
+  const saved = await fs.readFile(file, 'utf8');
+  for (const body of [undefined, {}, [], null, 'text', 42, true, { title: '' },
+    { title: ' ' }, { title: null }, { title: 42 }, { company: [] },
+    { location: {} }, { id: 99 }, { locaton: 'Peshawar' },
+    { title: 'Changed', salary: 100 }, { title: 'Changed', location: '' },
+    JSON.parse('{"__proto__":{"polluted":true}}')]) {
+    assert.equal((await server.request(route, 'PATCH', body)).status, 400);
+    assert.equal(await fs.readFile(file, 'utf8'), saved, 'Invalid PATCH must not change the file');
+  }
+  for (const method of ['POST', 'PUT']) {
+    const target = method === 'POST' ? '/jobs' : route;
+    assert.equal((await server.request(target, method, { ...data, id: 99 })).status, 400);
+    assert.equal((await server.request(target, method, { location: 'Islamabad' })).status, 400);
+  }
+  assert.equal(await fs.readFile(file, 'utf8'), saved);
+  assert.equal((await server.request('/jobs/99999', 'PATCH', { title: 'Missing' })).status, 404);
+  assert.equal((await server.request('/jobs/abc', 'PATCH', { title: 'Invalid' })).status, 400);
+
+  const results = await Promise.all([
+    server.request(route, 'PATCH', { title: 'Junior Developer' }),
+    server.request(route, 'PATCH', { company: 'XYZ' }),
+  ]);
+  assert.ok(results.every((result) => result.status === 200));
+  await server.stop();
+  server = await startServer(file);
+  assert.deepEqual((await server.request(route)).body, {
+    id: created.body.id, title: 'Junior Developer', company: 'XYZ', location: 'Karachi',
+  });
+  // Repeating the same change leaves the record in the same state.
+  const repeated = await server.request(route, 'PATCH', { company: 'XYZ' });
+  assert.equal(repeated.status, 200);
+  assert.equal(repeated.body.company, 'XYZ');
+  const fullUpdate = await server.request(route, 'PUT', data);
+  assert.equal(fullUpdate.status, 200);
+  assert.deepEqual(fullUpdate.body, { id: created.body.id, ...data });
+});
+
 test('Job lists filter, sort, paginate, and reject invalid query parameters', async (t) => {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'hirehub-day-three-'));
   const file = path.join(directory, 'jobs.json');

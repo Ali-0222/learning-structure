@@ -33,9 +33,10 @@ The service also calls validation functions. Results return from the repository 
 | GET | /jobs/1 | Retrieve job 1 |
 | POST | /jobs | Create a job |
 | PUT | /jobs/1 | Update all three editable fields |
+| PATCH | /jobs/1 | Update only supplied editable fields |
 | DELETE | /jobs/1 | Remove a job |
 
-POST and PUT require title, company, and location as non-empty strings. Send all three fields with PUT. The server assigns the ID.
+POST and PUT require title, company, and location as non-empty strings. Send all three fields with PUT. PATCH requires at least one of these fields and preserves omitted fields. All three methods reject unknown fields, including id. The server assigns the ID. See [DAY-4.md](DAY-4.md) for partial-update examples.
 200 means success, 201 created, 400 invalid input, and 404 job or route not found. List responses now use `{ data, pagination }`. A search with no matches returns an empty `data` array and zero total/totalPages. See [DAY-3.md](DAY-3.md) for filtering, sorting, and query examples.
 
 ## Parameters, query, and body

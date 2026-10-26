@@ -25,6 +25,7 @@ async function update(id, data) {
     const job = store.jobs.find((job) => job.id === id);
     // Another request may have deleted it after the service checked it.
     if (!job) fail(404, 'Job not found.');
+    // PUT supplies all editable fields; PATCH supplies only changed fields.
     Object.assign(job, data);
     return job;
   });

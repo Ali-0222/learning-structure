@@ -1,5 +1,5 @@
 const repository = require('./job.repository');
-const { fail, validateId, validateJob } = require('./job.validation');
+const { fail, validateId, validateJob, validateJobPatch } = require('./job.validation');
 const { validateJobQuery } = require('./job-query.validation');
 const { paginate } = require('../../common/utils/pagination');
 
@@ -52,4 +52,12 @@ async function deleteJob(rawId) {
   await repository.remove(job.id);
 }
 
-module.exports = { listJobs, getJob, createJob, updateJob, deleteJob };
+async function patchJob(rawId, body) {
+  const job = await getJob(rawId);
+  const changes = validateJobPatch(body);
+  // Send only changed fields, not a copy of the older full record.
+  // The repository applies them to the latest record inside the write queue.
+  return repository.update(job.id, changes);
+}
+
+module.exports = { listJobs, getJob, createJob, updateJob, patchJob, deleteJob };

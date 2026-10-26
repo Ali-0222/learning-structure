@@ -144,6 +144,6 @@ The existing `.ts` test files remain placeholders. The new `.js` test uses Node'
 5. 45 minutes: read the JSON storage helper and error handling.
 6. 45–60 minutes: run tests, read the write queue, and explain the flow without notes.
 
-Practice exercise: add an `employmentType` field with allowed values `full-time`, `part-time`, and `internship`. Update validation, sample data, and saved-data checks together. Test both valid and invalid values. This exercise is intentionally left for you.
+Practice exercise: add an `employmentType` field with allowed values `full-time`, `part-time`, and `internship`. Update validation (including the Day 4 editable-field allowlist), sample data, and saved-data checks together. Test both valid and invalid values. This exercise is intentionally left for you.
 
 Local saved data is ignored by Git. To start fresh, stop the server and rename your saved JSON file as a backup; the next run will use sample data. No commit or push is required to complete this lesson.

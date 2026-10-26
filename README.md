@@ -2,6 +2,8 @@
 
 A beginner-friendly project for learning Node.js backend structure through a working HireHub Jobs API.
 
+**Day 4:** Read [DAY-4.md](DAY-4.md) for partial updates with PATCH, PUT versus PATCH, and strict request-body validation. POST/PUT/PATCH now reject unknown fields instead of ignoring them.
+
 **Day 2:** Start with [DAY-2.md](DAY-2.md) for JSON file persistence, async/await, middleware, and restart tests. Jobs now survive server restarts.
 
 **Day 3:** Read [DAY-3.md](DAY-3.md) for query validation, filtering, sorting, and pagination. `GET /jobs` now returns `{ data, pagination }`, with five jobs per page by default. Other endpoint response shapes are unchanged.

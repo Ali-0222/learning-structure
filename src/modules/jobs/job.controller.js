@@ -26,4 +26,9 @@ async function deleteJob(req, res) {
   res.json({ message: 'Job deleted successfully.' });
 }
 
-module.exports = { getJobs, getJob, createJob, updateJob, deleteJob };
+async function patchJob(req, res) {
+  const job = await service.patchJob(req.params.id, req.body);
+  res.json(job);
+}
+
+module.exports = { getJobs, getJob, createJob, updateJob, patchJob, deleteJob };
